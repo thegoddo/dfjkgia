@@ -1,0 +1,437 @@
+/* Design tokens. Chart colours follow the validated reference palette (categorical slots 1–2,
+   blue↔red diverging pair); dark values are stepped for the dark surface, not inverted. */
+:root {
+  color-scheme: light;
+  --page: #f9f9f7;
+  --surface: #fcfcfb;
+  --surface-raised: #ffffff;
+  --text-primary: #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted: #898781;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --border: rgba(11, 11, 11, 0.1);
+  --accent: #2a78d6;
+  --accent-wash: rgba(42, 120, 214, 0.1);
+
+  --series-actual: #2a78d6;
+  --series-forecast: #eb6834;
+  --band-fill: rgba(235, 104, 52, 0.12);
+  --firm: #52514e;
+  --pos: #2a78d6; /* more wind than forecast */
+  --neg: #e34948; /* shortfall */
+  --neutral: #f0efec;
+  --good: #006300;
+  --critical: #d03b3b;
+
+  --radius: 12px;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0d0d0d;
+    --surface: #1a1a19;
+    --surface-raised: #1f1f1e;
+    --text-primary: #f0efec;
+    --text-secondary: #c3c2b7;
+    --text-muted: #898781;
+    --grid: #2c2c2a;
+    --axis: #383835;
+    --border: rgba(255, 255, 255, 0.1);
+    --accent: #3987e5;
+    --accent-wash: rgba(57, 135, 229, 0.16);
+    --series-actual: #3987e5;
+    --series-forecast: #d95926;
+    --band-fill: rgba(217, 89, 38, 0.18);
+    --firm: #c3c2b7;
+    --pos: #3987e5;
+    --neg: #e66767;
+    --neutral: #383835;
+    --good: #0ca30c;
+    --critical: #e66767;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--text-primary);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+.shell {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px 48px;
+}
+
+@media (max-width: 640px) {
+  .shell {
+    padding: 0 16px 32px;
+  }
+}
+
+/* ---- header ---------------------------------------------------------------- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 0 16px;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.brand p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.tabs {
+  display: inline-flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 3px;
+}
+
+.tabs button {
+  border: 0;
+  background: none;
+  padding: 7px 14px;
+  border-radius: 7px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-weight: 550;
+}
+
+.tabs button[aria-selected="true"] {
+  background: var(--accent-wash);
+  color: var(--text-primary);
+}
+
+/* ---- controls -------------------------------------------------------------- */
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+}
+
+.control {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.control label {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 550;
+}
+
+.control select {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 10px;
+  min-width: 120px;
+}
+
+.stepper {
+  display: flex;
+  gap: 4px;
+}
+
+.stepper button {
+  border: 1px solid var(--border);
+  background: var(--surface-raised);
+  border-radius: 8px;
+  width: 32px;
+  cursor: pointer;
+}
+
+.stepper button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.controls .hint {
+  margin-left: auto;
+  color: var(--text-secondary);
+  font-size: 13px;
+  max-width: 420px;
+}
+
+/* ---- tiles ----------------------------------------------------------------- */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.tile {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+}
+
+.tile .label {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.tile .value {
+  font-size: 26px;
+  font-weight: 620;
+  letter-spacing: -0.01em;
+  margin: 2px 0;
+}
+
+.tile .note {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.tile.hero {
+  grid-column: span 2;
+  background: linear-gradient(135deg, var(--accent-wash), transparent 70%), var(--surface);
+}
+
+.tile.hero .value {
+  font-size: 44px;
+}
+
+@media (max-width: 640px) {
+  .tile.hero {
+    grid-column: span 1;
+  }
+}
+
+/* ---- cards ----------------------------------------------------------------- */
+.grid-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 16px 8px;
+  margin-bottom: 16px;
+  min-width: 0;
+}
+
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.card h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 620;
+}
+
+.card .sub {
+  margin: 2px 0 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.link-btn {
+  border: 1px solid var(--border);
+  background: none;
+  border-radius: 7px;
+  padding: 3px 9px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 4px 0 6px;
+}
+
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.key-line {
+  width: 16px;
+  height: 2px;
+  border-radius: 1px;
+}
+
+.key-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.key-dash {
+  width: 16px;
+  border-top: 2px dashed var(--firm);
+}
+
+/* ---- tables ---------------------------------------------------------------- */
+.table-wrap {
+  max-height: 320px;
+  overflow: auto;
+  margin-bottom: 8px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+th,
+td {
+  text-align: right;
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--grid);
+}
+
+th:first-child,
+td:first-child {
+  text-align: left;
+}
+
+th {
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-weight: 550;
+}
+
+/* ---- tooltip --------------------------------------------------------------- */
+.tip {
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  min-width: 160px;
+}
+
+.tip .tip-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.tip .row {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  color: var(--text-secondary);
+}
+
+.tip .row b {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- misc ------------------------------------------------------------------ */
+.callout {
+  border-left: 3px solid var(--accent);
+  background: var(--surface);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  color: var(--text-secondary);
+}
+
+.callout b {
+  color: var(--text-primary);
+}
+
+.status-good {
+  color: var(--good);
+  font-weight: 600;
+}
+
+.status-bad {
+  color: var(--critical);
+  font-weight: 600;
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+.state {
+  padding: 48px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+footer {
+  color: var(--text-muted);
+  font-size: 12px;
+  margin-top: 24px;
+}
+
+.recharts-cartesian-axis-tick-value {
+  font-size: 11px;
+  fill: var(--text-muted);
+}

@@ -1,0 +1,14 @@
+services:
+  backend:
+    build: ./backend
+    environment:
+      DATA_SOURCE: ${DATA_SOURCE:-snapshot} # set to "live" to pull fresh data from Elexon at startup
+    expose:
+      - "8000"
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
