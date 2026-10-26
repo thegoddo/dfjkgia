@@ -5,11 +5,14 @@ from __future__ import annotations
 import logging
 from datetime import date, time
 from functools import lru_cache
+from pathlib import Path
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
+from fastapi.responses import RedirectResponse
+from fastapi.staticfiles import StaticFiles
 
 from . import config
 from .dataset import load_dataset
@@ -84,3 +87,17 @@ def horizons(
     max_h: Annotated[int, Query(ge=1, le=config.MAX_HORIZON_H)] = config.MAX_HORIZON_H,
 ) -> dict:
     return svc.horizons(max_h)
+
+
+# Serve the built frontend from the same origin when it is present (Vercel, or a local `npm run build`).
+# Mounted last so the /api routes and /docs take precedence.
+FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
+
+if FRONTEND_DIST.is_dir():
+    app.mount("/", StaticFiles(directory=FRONTEND_DIST, html=True), name="frontend")
+else:
+
+    @app.api_route("/", methods=["GET", "HEAD"], include_in_schema=False)
+    def root() -> RedirectResponse:
+        # API-only deploy (e.g. Render): send visitors and platform probes to the API docs.
+        return RedirectResponse("/docs")

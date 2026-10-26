@@ -3,7 +3,7 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from app.main import app
+from app.main import FRONTEND_DIST, app
 
 
 @pytest.fixture(scope="module")
@@ -13,6 +13,17 @@ def client():
 
 def test_health(client):
     assert client.get("/api/health").json() == {"status": "ok"}
+
+
+def test_root_serves_frontend_or_docs(client):
+    res = client.get("/", follow_redirects=False)
+    if FRONTEND_DIST.is_dir():
+        assert res.status_code == 200
+        assert "text/html" in res.headers["content-type"]
+    else:
+        assert res.status_code == 307
+        assert res.headers["location"] == "/docs"
+    assert client.head("/", follow_redirects=False).status_code in (200, 307)
 
 
 def test_meta_window(client):
